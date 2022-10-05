@@ -11,6 +11,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final List<FileSystemEntity> statuses = [];
+
   void _refreshStatuses() async {
     const rootPath = '/storage/emulated/0/';
     const modPaths = ['', 'GB', 'Yo'];
@@ -30,7 +32,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final statusesDir = Directory('$wassapPath/Media/.Statuses');
     print('$wassapPath/Media/.Statuses');
-    print(statusesDir.listSync());
+
+    for (FileSystemEntity file in statusesDir.listSync()) {
+      if (await file.exists()) {
+        statuses.add(file);
+      }
+    }
   }
 
   @override
@@ -51,8 +58,10 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: SizedBox(
         child: ListView.builder(
-          itemCount: 3,
-          itemBuilder: (context, index) => StatusTile(),
+          itemCount: statuses.length,
+          itemBuilder: (context, index) => StatusTile(
+            status: statuses[index],
+          ),
         ),
       ),
     );
